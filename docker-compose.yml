@@ -1,0 +1,15 @@
+services:
+  web:
+    build: .
+    container_name: todo-t420-02
+    ports:
+      - "8080:80"
+    volumes:
+      # Celý projekt namountovaný do containeru — změny v kódu jsou hned vidět.
+      - ./:/var/www/html
+      # SQLite databáze perzistovaná v named volume (přežije rebuild).
+      - sqlite-data:/var/www/html/data
+    restart: unless-stopped
+
+volumes:
+  sqlite-data:
