@@ -1,0 +1,5 @@
+# Lokální, strojově specifické nastavení oprávnění Claude Code
+.claude/settings.local.json
+
+# Runtime SQLite databáze (vzniká za běhu, viz data/.gitignore)
+/data/*.sqlite
