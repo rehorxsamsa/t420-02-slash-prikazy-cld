@@ -11,7 +11,7 @@
 ## Obsah složky tohoto dílu
 
 ```
-dil-02-slash-prikazy/
+t420-02-slash-prikazy-cld/
 ├── .claude/skills/
 │   ├── php-review/SKILL.md     # vlastní příkaz /php-review
 │   └── run-tests/SKILL.md      # vlastní příkaz /run-tests
@@ -25,10 +25,61 @@ dil-02-slash-prikazy/
 
 Spusť testy, ať vidíš, že to celé žije:
 ```bash
-cd dil-02-slash-prikazy
+cd t420-02-slash-prikazy-cld
 php tests/run.php
 ```
 Výstup: `Prošlo: 6   Selhalo: 0   Vše OK ✨`
+
+---
+
+## Předpoklady a instalace
+
+Pro tenhle díl potřebuješ dvě věci — **Claude Code** (kvůli slash příkazům a skills) a způsob, jak rozběhnout aplikaci. Tu pustíš buď v **Dockeru** (doporučeno, nic dalšího neřešíš), nebo lokálně přes **PHP 8.3**.
+
+### Claude Code
+
+```bash
+# Varianta A — přes npm (jakýkoliv OS, potřebuješ Node.js 18+)
+npm install -g @anthropic-ai/claude-code
+
+# Varianta B — instalační skript (macOS / Linux / WSL)
+curl -fsSL https://claude.ai/install.sh | bash
+
+# Ověření
+claude --version
+```
+
+V kořeni projektu pak stačí spustit `claude`.
+
+### Spuštění aplikace v Dockeru (doporučeno)
+
+Předpoklad: nainstalovaný **Docker** + **Docker Compose** (`docker --version`). Nic víc — PHP ani rozšíření řešit nemusíš, vše je v image.
+
+```bash
+cd t420-02-slash-prikazy-cld
+docker compose up -d --build   # build + start na pozadí
+docker compose logs -f web     # sledování logů (Ctrl+C ukončí jen sledování)
+docker compose down            # zastavení (SQLite data zůstávají ve volume)
+```
+
+Pak otevři **http://localhost:8080** — uvidíš Todo aplikaci s progress barem; funguje přidávání, odškrtávání i mazání úkolů.
+
+**Co Docker dělá za tebe:**
+- **`Dockerfile`** — image `php:8.3-apache`; doinstaluje rozšíření `pdo_sqlite`, zapne `mod_rewrite` a přesměruje DocumentRoot na `public/`.
+- **`docker-compose.yml`** — služba `web` na portu **8080:80**, bind-mount celého projektu (změny v kódu jsou hned vidět) a named volume `sqlite-data` pro perzistenci databáze (přežije i `down`/rebuild).
+- **`docker-entrypoint.sh`** — při startu nastaví práva na `data/`, aby do SQLite mohl zapisovat uživatel `www-data` (řeší typický permission problém u bind-mountu).
+
+### Spuštění lokálně bez Dockeru
+
+Stačí **PHP 8.3** s rozšířením `pdo_sqlite` (`php -m | grep pdo_sqlite`):
+
+```bash
+cd t420-02-slash-prikazy-cld
+php tests/run.php                       # testovací sada
+php -S localhost:8080 -t public         # vestavěný PHP server → http://localhost:8080
+```
+
+> Databáze se inicializuje sama při prvním requestu/testu (`CREATE TABLE IF NOT EXISTS` + seed 3 úkolů do `data/tasks.sqlite`). Žádné migrace navíc nespouštíš. Detaily architektury jsou v [`ARCHITEKTURA.md`](ARCHITEKTURA.md).
 
 ---
 
@@ -253,4 +304,4 @@ Omezuje, jaké nástroje smí skill použít. `/php-review` má `allowed-tools: 
 **Implementaci.** Test definuje očekávané chování; pravidlo skillu výslovně zakazuje „opravit" test jeho oslabením. Claude najde chybu v implementaci (`progress()`) a opraví ji.
 </details>
 
-→ Pokračuj na [Díl 03 — Konfigurace, modely a klíčové soubory](../dil-03-konfigurace-modely/README.md)
+→ Pokračuj na [Díl 03 — Konfigurace, modely a klíčové soubory](../t420-03-konfigurace-modely-cld/README.md)
