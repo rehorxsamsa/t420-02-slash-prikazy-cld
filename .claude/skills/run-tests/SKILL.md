@@ -12,9 +12,9 @@ Spusť testovací sadu a vyhodnoť výsledky:
 !`git status --short 2>/dev/null || echo "(mimo git)"`
 
 ## Postup
-1. Spusť testy příkazem:
+1. Spusť testy příkazem (PHP je jen v Dockeru, ne na hostiteli):
    ```
-   php tests/run.php
+   docker exec todo-t420-02 php tests/run.php
    ```
 2. Pokud všechny projdou, napiš stručné shrnutí (kolik testů, vše OK).
 3. Pokud nějaký selže:

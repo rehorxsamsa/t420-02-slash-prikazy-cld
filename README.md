@@ -23,10 +23,11 @@ t420-02-slash-prikazy-cld/
 └── autoload.php
 ```
 
-Spusť testy, ať vidíš, že to celé žije:
+Spusť testy, ať vidíš, že to celé žije (PHP běží jen v Dockeru, viz níže):
 ```bash
 cd t420-02-slash-prikazy-cld
-php tests/run.php
+docker compose up -d --build
+docker exec todo-t420-02 php tests/run.php
 ```
 Výstup: `Prošlo: 6   Selhalo: 0   Vše OK ✨`
 
@@ -34,7 +35,7 @@ Výstup: `Prošlo: 6   Selhalo: 0   Vše OK ✨`
 
 ## Předpoklady a instalace
 
-Pro tenhle díl potřebuješ dvě věci — **Claude Code** (kvůli slash příkazům a skills) a způsob, jak rozběhnout aplikaci. Tu pustíš buď v **Dockeru** (doporučeno, nic dalšího neřešíš), nebo lokálně přes **PHP 8.3**.
+Pro tenhle díl potřebuješ dvě věci — **Claude Code** (kvůli slash příkazům a skills) a **Docker**. Platí pravidlo celého workspace: **PHP je záměrně jen v Dockeru** — na hostiteli se neinstaluje, všechno PHP (aplikace i testy) běží v kontejneru.
 
 ### Claude Code
 
@@ -69,14 +70,13 @@ Pak otevři **http://localhost:8080** — uvidíš Todo aplikaci s progress bare
 - **`docker-compose.yml`** — služba `web` na portu **8080:80**, bind-mount celého projektu (změny v kódu jsou hned vidět) a named volume `sqlite-data` pro perzistenci databáze (přežije i `down`/rebuild).
 - **`docker-entrypoint.sh`** — při startu nastaví práva na `data/`, aby do SQLite mohl zapisovat uživatel `www-data` (řeší typický permission problém u bind-mountu).
 
-### Spuštění lokálně bez Dockeru
+### Spouštění PHP příkazů (testy apod.)
 
-Stačí **PHP 8.3** s rozšířením `pdo_sqlite` (`php -m | grep pdo_sqlite`):
+Lokální PHP neexistuje — všechny `php` příkazy se pouští přes `docker exec` v běžícím kontejneru `todo-t420-02`:
 
 ```bash
-cd t420-02-slash-prikazy-cld
-php tests/run.php                       # testovací sada
-php -S localhost:8080 -t public         # vestavěný PHP server → http://localhost:8080
+docker exec todo-t420-02 php tests/run.php    # testovací sada
+docker exec todo-t420-02 php -v              # verze PHP v kontejneru
 ```
 
 > Databáze se inicializuje sama při prvním requestu/testu (`CREATE TABLE IF NOT EXISTS` + seed 3 úkolů do `data/tasks.sqlite`). Žádné migrace navíc nespouštíš. Detaily architektury jsou v [`ARCHITECTURE.md`](ARCHITECTURE.md).
@@ -112,7 +112,7 @@ Claude projde změny / kód a dá ti zpětnou vazbu k bezpečnosti, kvalitě a s
 Otevře `CLAUDE.md` k editaci. **Praktické použití:** když si všimneš, že Claude opakovaně dělá něco proti tvým konvencím, přidej pravidlo do `CLAUDE.md` přes `/memory`. Příklad pro náš projekt:
 ```
 > /memory
-[přidáš řádek] "Testy se spouští příkazem: php tests/run.php"
+[přidáš řádek] "Testy se spouští příkazem: docker exec todo-t420-02 php tests/run.php"
 ```
 
 ### `/permissions` — bezpečnostní hranice
@@ -120,7 +120,7 @@ Otevře `CLAUDE.md` k editaci. **Praktické použití:** když si všimneš, že
 ```
 > /permissions
 ```
-Nastavíš, co Claude smí/nesmí bez ptaní (např. povolit `Bash(php tests/run.php:*)`, zakázat `Bash(rm -rf *)`). Pro tým je to klíčové — definuješ trust boundary jednou.
+Nastavíš, co Claude smí/nesmí bez ptaní (např. povolit `Bash(docker exec todo-t420-02 php tests/run.php:*)`, zakázat `Bash(rm -rf *)`). Pro tým je to klíčové — definuješ trust boundary jednou.
 
 ### `/doctor` — health check
 
@@ -146,9 +146,9 @@ Zapne Vim klávesy v promptu. Pro vimíře příjemné, ostatní můžou ignorov
 
 ## 2. Vlastní příkazy = Skills (klíčová část dílu)
 
-Tady je **důležité upřesnění oproti cheatsheetu.** Cheatsheet uvádí `.claude/commands/` jako „custom slash commands". To pořád funguje, ale je to **legacy formát**. V roce 2026 byly vlastní příkazy sloučeny se **Skills**:
+V roce 2026 byly vlastní příkazy sloučeny se **Skills**:
 
-| | Legacy (cheatsheet) | Doporučeno 2026 |
+| | Legacy | Doporučeno 2026 |
 |---|---|---|
 | Umístění | `.claude/commands/jmeno.md` | `.claude/skills/jmeno/SKILL.md` |
 | Invokace | `/jmeno` | `/jmeno` (stejně) |
@@ -214,7 +214,7 @@ allowed-tools: Bash, Read, Edit
 !`git status --short`
 
 ## Postup
-1. Spusť testy: php tests/run.php
+1. Spusť testy: docker exec todo-t420-02 php tests/run.php
 2. Pokud projdou — shrnutí.
 3. Pokud selžou — najdi příčinu v IMPLEMENTACI (ne v testu), oprav, spusť znovu.
 4. Nikdy „neopravuj" test jeho oslabením.
@@ -224,7 +224,7 @@ allowed-tools: Bash, Read, Edit
 ```
 > /run-tests
 ```
-Claude spustí `php tests/run.php`, a když něco selže, opraví **implementaci** (ne test).
+Claude spustí `docker exec todo-t420-02 php tests/run.php`, a když něco selže, opraví **implementaci** (ne test).
 
 ### Vyzkoušej celý workflow (doporučené cvičení)
 
