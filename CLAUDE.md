@@ -12,10 +12,12 @@ Todo aplikace v **čistém PHP 8.3 (OOP)** — bez frameworku a bez Composeru. S
 
 ## Příkazy
 
+**PHP je záměrně jen v Dockeru** — na hostiteli nainstalované není. Všechny `php` příkazy (testy apod.) spouštěj přes `docker exec` v kontejneru `todo-t420-02`; neinstaluj PHP lokálně.
+
 ```bash
-php tests/run.php              # celá testovací sada (exit 0 = OK, 1 = selhání)
-docker compose up -d --build   # build + start → http://localhost:8080
-docker compose down            # stop (SQLite data zůstávají v named volume)
+docker compose up -d --build                        # build + start → http://localhost:8080
+docker exec todo-t420-02 php tests/run.php          # celá testovací sada (exit 0 = OK, 1 = selhání)
+docker compose down                                 # stop (SQLite data zůstávají v named volume)
 ```
 
 **Spuštění jediného testu:** runner nemá CLI filtr. Testy jsou pojmenované položky v poli, které vrací každý `tests/*Test.php`. Pro izolaci jednoho testu dočasně zakomentuj ostatní v daném souboru, nebo přesuň ostatní `*Test.php` mimo `glob('tests/*Test.php')`.
