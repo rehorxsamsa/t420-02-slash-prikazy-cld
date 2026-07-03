@@ -12,10 +12,11 @@ $e = static fn (string $s): string => htmlspecialchars($s, ENT_QUOTES, 'UTF-8');
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Todo</title>
+    <title>t420-02-slash-prikazy-cld — Todo</title>
     <style>
         body { font-family: system-ui, sans-serif; max-width: 640px; margin: 2rem auto; padding: 0 1rem; }
         h1 { margin-bottom: .25rem; }
+        header.app { color: #888; font-size: .85rem; letter-spacing: .05em; margin-bottom: 1rem; }
         .progress { color: #555; margin-bottom: 1.5rem; }
         ul { list-style: none; padding: 0; }
         li { display: flex; align-items: center; gap: .75rem; padding: .5rem 0; border-bottom: 1px solid #eee; }
@@ -28,6 +29,7 @@ $e = static fn (string $s): string => htmlspecialchars($s, ENT_QUOTES, 'UTF-8');
     </style>
 </head>
 <body>
+    <header class="app">t420-02-slash-prikazy-cld</header>
     <h1>Todo</h1>
     <p class="progress">Hotovo: <?= $progress ?> %</p>
 
