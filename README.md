@@ -79,7 +79,7 @@ php tests/run.php                       # testovací sada
 php -S localhost:8080 -t public         # vestavěný PHP server → http://localhost:8080
 ```
 
-> Databáze se inicializuje sama při prvním requestu/testu (`CREATE TABLE IF NOT EXISTS` + seed 3 úkolů do `data/tasks.sqlite`). Žádné migrace navíc nespouštíš. Detaily architektury jsou v [`ARCHITEKTURA.md`](ARCHITEKTURA.md).
+> Databáze se inicializuje sama při prvním requestu/testu (`CREATE TABLE IF NOT EXISTS` + seed 3 úkolů do `data/tasks.sqlite`). Žádné migrace navíc nespouštíš. Detaily architektury jsou v [`ARCHITECTURE.md`](ARCHITECTURE.md).
 
 ---
 
@@ -243,6 +243,18 @@ Vlastní příkaz se vyplatí, když **opakuješ stejný postup**. Náš `/php-r
 > Děláš něco potřetí stejně? → udělej z toho skill.
 
 Příklady dalších užitečných skillů pro PHP projekt: `/migration` (vygeneruj DB migraci podle konvence), `/endpoint` (přidej CRUD endpoint napříč vrstvami), `/commit` (vytvoř commit podle Conventional Commits).
+
+---
+
+## 7 zajímavostí o tomto projektu
+
+1. **Žádný framework, žádný Composer.** Celá aplikace stojí na ručně psaném PSR-4 autoloaderu — `autoload.php` má pouhých 26 řádků a mapuje `App\` → `src/`. Nové třídy stačí pojmenovat podle cesty a fungují.
+2. **Vlastní test runner místo PHPUnit.** `tests/run.php` má 108 řádků a zvládá vše potřebné: testy jsou pojmenované closures v poli, k dispozici jsou asserty `assert_same`, `assert_true` i `assert_throws` — s českými chybovými hláškami („očekáváno / skutečnost").
+3. **Testy běží úplně bez databáze.** Díky Dependency Inversion závisí `TaskService` na `TaskRepositoryInterface`; testy mu podstrčí `InMemoryTaskRepository` (obyčejné pole v paměti), takže sada doběhne za zlomek sekundy i bez SQLite.
+4. **Databáze se nainstaluje sama.** `Core\Database::connection()` je lazy singleton — při prvním dotazu vytvoří schéma (`CREATE TABLE IF NOT EXISTS`) a do prázdné tabulky naseeduje 3 ukázkové úkoly. Žádné migrace, žádný setup skript.
+5. **Router se vejde do 46 řádků.** Přesto umí placeholdery jako `{id}`, které handleru předá už přetypované na `int`. Všechny routy se registrují na jednom místě v `public/index.php`.
+6. **Celý projekt je miniaturní schválně.** Zdrojový kód (`src/` + `tests/`) má dohromady ~600 řádků — dost málo na přečtení za večer, dost na ukázku plného vrstvení Controller → Service → Repository včetně PRG redirectů po zápisu.
+7. **Docker entrypoint řeší jeden záludný detail.** Bind-mount projektu do kontejneru typicky rozbije zápis do SQLite kvůli právům; `docker-entrypoint.sh` proto při startu přenastaví vlastníka `data/` na `www-data` — bez toho by aplikace v Dockeru spadla na prvním INSERT.
 
 ---
 
