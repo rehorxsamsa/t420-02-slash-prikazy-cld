@@ -63,7 +63,7 @@ docker compose logs -f web     # sledování logů (Ctrl+C ukončí jen sledová
 docker compose down            # zastavení (SQLite data zůstávají ve volume)
 ```
 
-Pak otevři **http://localhost:8080** — uvidíš aplikaci Seznam úkolů s progress barem; funguje přidávání, odškrtávání i mazání úkolů.
+Pak otevři **http://localhost:8080** — uvidíš aplikaci Seznam úkolů s progress barem; funguje přidávání, odškrtávání i mazání úkolů. Vzhled je nastylovaný přes **Bootstrap 5** (linkovaný z CDN v `templates/tasks.php`), takže prohlížeč pro plný vzhled potřebuje přístup na internet.
 
 **Co Docker dělá za tebe:**
 - **`Dockerfile`** — image `php:8.3-apache`; doinstaluje rozšíření `pdo_sqlite`, zapne `mod_rewrite` a přesměruje DocumentRoot na `public/`.

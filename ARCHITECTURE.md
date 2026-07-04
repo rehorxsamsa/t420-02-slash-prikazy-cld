@@ -3,7 +3,9 @@
 Aplikace Seznam úkolů v **čistém PHP 8.3 (OOP)** — bez frameworku a bez Composeru.
 Cílem je ukázat čistou **vrstvenou architekturu** (Controller → Service →
 Repository), ruční PSR-4 autoloading, SQLite přes PDO a testovatelnost přes
-dependency inversion — vše bez jediné externí závislosti.
+dependency inversion — backend bez jediné externí závislosti. Jediná externí
+závislost je na **frontendu**: šablona linkuje **Bootstrap 5** z CDN (samotné
+CSS, žádný build ani npm).
 
 ---
 
@@ -28,7 +30,7 @@ t420-02-slash-prikazy-cld/
 │       ├── Router.php       # Mapování (metoda + cesta) → handler
 │       └── Database.php     # PDO/SQLite singleton + migrace + seed
 ├── templates/
-│   └── tasks.php            # HTML šablona seznamu úkolů (escapovaný výstup)
+│   └── tasks.php            # HTML šablona seznamu úkolů (Bootstrap 5 z CDN, escapovaný výstup)
 ├── tests/                   # Vlastní test runner, namespace Tests\
 │   ├── run.php              # Spouštěč: php tests/run.php
 │   ├── TaskServiceTest.php  # 6 jednotkových testů business logiky
@@ -70,7 +72,7 @@ public/index.php ──► Router ──► TaskController ──► TaskService
 | **Service** | `Service\TaskService` | Business logika: validace názvu, výpočet `progress()` | Repository (přes rozhraní) |
 | **Repository** | `Repository\TaskRepository` | Jediné místo s SQL; prepared statements; mapování řádků na `Task` | `Core\Database` (PDO) |
 | **Model** | `Model\Task` | Doménová entita + tovární `fromRow()` | — |
-| **View** | `templates/tasks.php` | Vykreslení HTML, escapování výstupu | — |
+| **View** | `templates/tasks.php` | Vykreslení HTML (Bootstrap 5 z CDN), escapování výstupu | — |
 
 ### Klíčové principy
 
