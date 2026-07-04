@@ -1,6 +1,6 @@
 # Architektura aplikace
 
-Todo aplikace v **čistém PHP 8.3 (OOP)** — bez frameworku a bez Composeru.
+Aplikace Seznam úkolů v **čistém PHP 8.3 (OOP)** — bez frameworku a bez Composeru.
 Cílem je ukázat čistou **vrstvenou architekturu** (Controller → Service →
 Repository), ruční PSR-4 autoloading, SQLite přes PDO a testovatelnost přes
 dependency inversion — vše bez jediné externí závislosti.

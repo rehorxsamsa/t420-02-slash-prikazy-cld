@@ -12,7 +12,7 @@ $e = static fn (string $s): string => htmlspecialchars($s, ENT_QUOTES, 'UTF-8');
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>t420-02-slash-prikazy-cld — Todo</title>
+    <title>t420-02-slash-prikazy-cld — Seznam úkolů</title>
     <style>
         body { font-family: system-ui, sans-serif; max-width: 640px; margin: 2rem auto; padding: 0 1rem; }
         h1 { margin-bottom: .25rem; }
@@ -30,7 +30,7 @@ $e = static fn (string $s): string => htmlspecialchars($s, ENT_QUOTES, 'UTF-8');
 </head>
 <body>
     <header class="app">t420-02-slash-prikazy-cld</header>
-    <h1>Todo</h1>
+    <h1>Seznam úkolů</h1>
     <p class="progress">Hotovo: <?= $progress ?> %</p>
 
     <form class="add" method="post" action="/tasks">

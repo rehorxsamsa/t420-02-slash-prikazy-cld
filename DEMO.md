@@ -21,7 +21,7 @@ docker exec todo-t420-02 php tests/run.php   # ověř, že testy projdou (Prošl
 
 Checklist připravenosti:
 
-- [ ] V prohlížeči mám otevřený **http://localhost:8080** a vidím Todo aplikaci se seznamem úkolů a řádkem „Hotovo: … %".
+- [ ] V prohlížeči mám otevřený **http://localhost:8080** a vidím aplikaci Seznam úkolů se seznamem úkolů a řádkem „Hotovo: … %".
 - [ ] Mám otevřený terminál s běžícím **`claude`** v kořeni projektu.
 - [ ] Písmo v terminálu i prohlížeči je **zvětšené** (Ctrl+`+`), aby to bylo čitelné i zezadu.
 - [ ] Vím, že aplikace při startu má 3 ukázkové úkoly (naseedují se samy) — takže i „prázdné" demo něco ukáže.
